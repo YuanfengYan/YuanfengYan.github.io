@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>打灰太狼</title>
+	</head>
+	<style type="text/css">
+		.warp {
+			position: relative;
+			width: 320px;
+			height: 480px;
+			background: url(images/game_bg.jpg) 0 0 no-repeat;
+			margin: 50px auto 0;
+		}
+		.warp .score {
+			position: absolute;
+			top: 10px;
+			left: 65px;
+			color: white;
+			font-size: 20px;
+		}
+		/*进度条*/
+		.progress_bar {
+			position: absolute;
+			top: 66px;
+			left: 63px;
+			width: 182px;
+			height: 16px;
+			background: url(images/progress.png) 0 0 no-repeat;
+			transition: width 1s linear;
+		}
+		
+		.holes {
+			width: 100%;
+			/*background-color: yellow;*/
+			height: 100%;
+			position: absolute;
+			bottom: 0px;
+			padding: 0px;
+			list-style: none;
+			margin: 0px;
+		}
+		
+		.holes li {
+			display: block;
+			width: 68px;
+			height: 63px;
+			/*background-image:url(images/x.png)  ;*/
+			background-size: 673.6px 63px;
+			background-position-x: 0px;
+			position: absolute;
+			/*transition: background 1s linear;*/
+		}
+		
+		.holes li:nth-child(1) {
+			left: 31px;
+			top: 186px;
+		}
+		
+		.holes li:nth-child(2) {
+			left: 110px;
+			top: 142px;
+		}
+		
+		.holes li:nth-child(3) {
+			left: 198px;
+			top: 169px;
+		}
+		
+		.holes li:nth-child(4) {
+			left: 27px;
+			top: 249px;
+		}
+		
+		.holes li:nth-child(5) {
+			left: 113px;
+			top: 219px;
+		}
+		
+		.holes li:nth-child(6) {
+			left: 210px;
+			top: 238px;
+		}
+		
+		.holes li:nth-child(7) {
+			left: 41px;
+			top: 320px;
+		}
+		
+		.holes li:nth-child(8) {
+			left: 129px;
+			top: 303px;
+		}
+		
+		.holes li:nth-child(9) {
+			left: 217px;
+			top: 320px;
+		}
+		
+		.first {
+			width: 100%;
+			position: absolute;
+			top: 35%;
+			z-index: 10;
+		}
+		
+		.first p {
+			font-size: 25px;
+			width: 100px;
+			margin: 0 auto;
+			background-color: blanchedalmond;
+			color: red;
+			font-weight: 900;
+			border-radius: 10px;
+		}
+		
+		.first span {
+			color: black;
+			line-height: 30px;
+			display: block;
+			margin: 10px auto;
+			width: 90%;
+			font-size: 18px;
+			text-indent: 30px;
+		}
+	</style>
+	<body>
+		<div class="warp">
+			<!--分数-->
+			<div class="score">
+				0
+			</div>
+			<!--进度条-->
+			<div class="progress_bar" style="width: 183px;">
+			</div>
+			<!--开始界面-->
+			<div class="first">
+				<p>开始游戏</p>
+				<span>在设定的时间内击打出来的灰太狼，敲打大灰太狼加10分，敲打小灰太狼减10分</span>
+			</div>
+			<ul class="holes">
+				<li></li>
+				<li></li>
+				<li></li>
+				<li></li>
+				<li></li>
+				<li></li>
+				<li></li>
+				<li></li>
+				<li></li>
+			</ul>
+		</div>
+		<script type="text/javascript">
+			var progress_bar = document.querySelector('.progress_bar');
+			var li = document.querySelectorAll(".holes li");
+			var startgame = document.querySelector('.first p');
+			var score_div = document.querySelector('.score');
+			var gameTime = 15;
+			var bg_img = ["url(images/x.png) ", "url(images/h.png)"];
+			var bg_pos = [0, -68, -136, -204, -272, -340, -408, -476, -544];
+			var score = 0;
+			var holefull = []; //作为洞口是否被占的标志
+			function random(min, max) { //返回1~3的随机数
+				return parseInt(Math.random() * (max - min) + min);
+			}
+			function up() {
+				var hole = random(0, 9); //随机的洞口编号
+				while(holefull[hole]) {
+					hole = random(0, 9);
+				}
+				if(hole == 9) {//随机函数有bug有可能产生9但概率不大，目前没解决，先用if暂时顶替
+					hole = 8;
+				}
+				holefull[hole] = true;
+				li[hole].mouse = random(0, 2); //随机的老鼠编号
+				li[hole].count = 0; //背景图编号
+				li[hole].down = false;
+				var time1 = setInterval(function() { //实现狼的出现和消失
+					li[hole].style.backgroundPositionX = bg_pos[li[hole].count] + 'px';
+					li[hole].style.backgroundImage = bg_img[li[hole].mouse];
+					//					li[hole].count++;
+					if(!li[hole].clicked) {
+						if(li[hole].count == 5 || li[hole].down) {
+							li[hole].count--;
+							li[hole].down = true;
+						} else {
+							li[hole].count++;
+						}
+					} else { //点击后执行的代码
+						if(!li[hole].down) {
+							li[hole].count++;
+						}
+						if(li[hole].count == 8 || li[hole].down) {
+							li[hole].count = !li[hole].down ? 6 : li[hole].count;
+							li[hole].down = true;
+							li[hole].count--;
+						}
+					}
+					if(li[hole].down && li[hole].count == 0) { //下去之后的一些变量的初始化
+						li[hole].style.backgroundImage = "";
+						holefull[hole] = false;
+						if(li[hole].clicked) {
+							li[hole].clicked = false;
+							li[hole].flag=true;
+							if(li[hole].mouse == 0) {
+								score -= 10;
+							} else {
+								score += 10;
+							}
+							score_div.innerHTML = score;
+						}
+						clearInterval(time1);
+					}
+				}, 150);
+			}
+			function start() { //定时调用up（）实现下一个的狼的出现。
+				starttime = setInterval(function() {
+					up();
+					progress_bar.style.width = 183 * (gameTime / 15) + "px";
+					gameTime--;
+					if(gameTime <= 0) {
+						stop();
+						setTimeout(function() {
+							startgame.innerHTML = '再来一次'
+							document.querySelector('.first  span').innerHTML="一共得分为："+score+"分"+'\n'+"是否进行下一局";
+							document.querySelector('.first').style.display = 'block';
+							score=0;
+							gameTime = 15;
+							progress_bar.style.width=183+'px';
+							score_div.innerHTML=score;
+						}, 3000);
+					}
+				}, 500)
+			}
+			function stop() {
+				clearInterval(starttime);
+			}
+			for(var i = 0; i < 9; i++) {
+				li[i].index = i;
+				li[i].flag=true;//避免连续点击使狼一直停留在被敲打状态
+				li[i].onclick = function() {
+					if(holefull[this.index]) {
+						this.clicked = true;
+						this.count =this.flag==true?6:this.count;
+						this.flag=false;
+						console.log(this.count);
+					}
+				}
+			}
+			startgame.onclick = function() {
+					document.querySelector('.first').style.display = 'none';
+					start();
+				}
+		</script>
+	</body>
+
+</html>
