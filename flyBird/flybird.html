@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>flybird</title>
+		<script src="js/flybird.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css">
+			@-webkit-keyframes Ground {
+				from {
+					background-position-x: 0px;
+				}
+				to {
+					background-position-x: -343px;
+				}
+			}
+			
+			#scene {
+				margin: 100px auto;
+				background: url(img/bg.jpg) no-repeat;
+				position: relative;
+				width: 343px;
+				height: 480px;
+				overflow: hidden;
+			}
+			
+			.head {
+				position: absolute;
+				width: 250px;
+				left: 50%;
+				top: 135px;
+				margin-left: -125px;
+				transition: all 1s ease-in-out;
+			}
+			
+			.head span {
+				position: absolute;
+				left: 206px;
+				top: 20px;
+				width: 40px;
+				height: 30px;
+				background: url(img/bird1.png) 0 0 no-repeat;
+				/*border: 1px solid black;*/
+			}
+			
+			.btns {
+				width: 220px;
+				left: 50%;
+				top: 260px;
+				margin-left: -110px;
+				position: absolute;
+			}
+			
+			.start-btn {
+				float: left;
+				width: 85px;
+				height: 29px;
+				background: url(img/start.jpg);
+				cursor: pointer;
+			}
+			
+			.submit-btn {
+				float: right;
+				width: 85px;
+				height: 29px;
+				background: url(img/submit.jpg);
+				cursor: pointer;
+			}
+			
+			.flybird {
+				position: absolute;
+				left: 30px;
+				top: 50px;
+				width: 40px;
+				height: 30px;
+				display: none;
+				background: url(img/down_bird0.png) no-repeat;
+				transition: top 0.025s linear;
+			}
+			
+			.ground {
+				position: absolute;
+				width: 686px;
+				height: 14px;
+				top: 423px;
+				background: url(img/slider.jpg) repeat-x;
+				background-size: 343px;
+				animation: Ground 5s infinite linear;
+			}
+			
+			.pipes {
+				position: absolute;
+				width: 62px;
+				height: 88%;
+				transition: left linear 0.25s;
+			}
+			
+			.pipeUp {
+				position: absolute;
+				top: 0px;
+				width: 100%;
+				height: 100px;
+				background: url(img/up_pipe.png) 0 bottom no-repeat, url(img/up_mod.png) repeat-y;
+			}
+			
+			.pipeDown {
+				position: absolute;
+				bottom: 0px;
+				height: 200px;
+				width: 100%;
+				background: url(img/down_pipe.png) 0 top no-repeat, url(img/down_mod.png) repeat-y;
+			}
+			
+			/*.gameEnd {
+				width: 100%;
+				height: 0;
+				position: absolute;
+				z-index: 5;
+				background-color: rgba(0,0,0,0.3);
+				display: none;
+
+			}*/
+			
+			.logo {
+				position: absolute;
+				left: 50%;
+				transform: translateX(-50%);
+				-webkit-transform: translateX(-50%);
+				top: -42px;
+				z-index: 5;
+				transition: top 1s;
+			}
+			
+			.scoreBoard {
+				position: absolute;
+				width: 269px;
+				height: 135px;
+				left: 50%;
+				top:481px;
+				transform: translateX(-50%);
+				-webkit-transform: translateX(-50%);
+				background: url(img/message.jpg) no-repeat;
+				z-index: 5;
+				transition: top 1s;
+			}
+			
+			.ok-btn {
+				position: absolute;
+				width: 96px;
+				height: 36px;
+				left: -96px;
+				top: 330px;
+				z-index: 5;
+				background: url(img/ok.jpg);
+				transition: left 1s;
+			}
+			.scoreBoard span:nth-child(1){
+				position: absolute;
+			    left: 213px;
+			    top: 43px;
+			    font-size: 20px;
+			}
+			.scoreBoard span:nth-child(2){
+				position: absolute;
+			    left: 213px;
+			    top: 88px;
+			    font-size: 20px;
+			}
+			.gameMusic{
+				display: block;
+				margin-top: 68px ;
+				left: 50%;
+				transform: translateX(-50%);
+				width: 343px;
+				position: absolute;
+				top: 0px;
+			}
+			.level{
+				position: absolute;
+			    top: 50px;
+			    z-index: 2;
+			    width: 100%;
+			    text-align: center;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="scene">
+			<div class="level">
+				<!--<img src="img/0.jpg"/>-->
+			</div>
+			<div class="head">
+				<img src="img/head.jpg" />
+				<span></span>
+			</div>
+			<div class="btns">
+				<div class="start-btn">
+
+				</div>
+				<div class="submit-btn">
+
+				</div>
+			</div>
+			<div class="flybird">
+
+			</div>
+			<!--<div class="pipes">
+				<div class="pipeUp">
+					<div class="pipeUp1">
+						
+					</div>
+				</div>
+				<div class="pipeDown">
+					<div class="pipeDown1">
+						
+					</div>
+				</div>
+				
+			</div>-->
+			<div class="ground">
+			</div>
+			<div class="gameEnd">
+				<div class="logo">
+					<img src="img/game_over.jpg" alt="" />
+				</div>
+				<div class="scoreBoard" >
+					<span class="score">0</span>
+					<span class="bestScore">0</span>
+				</div>
+				<div class="ok-btn" >
+
+				</div>
+
+			</div>
+			
+		</div>
+		<audio class="gameMusic" src="music/game_music.mp3" loop="loop" preload controls="controls">
+			</audio>
+			<audio class="bulletMusic" src="music/bullet.mp3" ></audio>
+			<audio class="overMusic" src="music/game_over.mp3"></audio>
+
+	</body>
+
+</html>
