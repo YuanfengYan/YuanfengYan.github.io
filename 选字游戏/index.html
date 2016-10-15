@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>猜字游戏</title>
+		<style>
+			* {
+				margin: 0px;
+				padding: 0px;
+			}
+			
+			#guess {
+				width: 350px;
+				height: 500px;
+				border: 2px solid cadetblue;
+				margin: 0 auto;
+				position: relative;
+			}
+			
+			.remainTime {
+				margin-left: 5%;
+				float: left;
+				width: 55%;
+				height: 40px;
+				text-align: left;
+				line-height: 40px;
+				font-size: 22px;
+				display: inline-block;
+			}
+			
+			.degree {
+				display: block;
+				float: right;
+				width: 30px;
+				text-align: center;
+			}
+			
+			.complete {
+				/*border: 2px solid cadetblue;*/
+				width: 35%;
+				height: 40px;
+				text-align: right;
+				margin-right: 5%;
+				line-height: 40px;
+				font-size: 22px;
+				display: inline-block;
+			}
+			
+			.big {
+				width: 100%;
+				margin-top: 30px;
+				text-align: center;
+				font-size: 70px;
+				line-height: 80px;
+				height: 80px;
+			}
+			
+			.tip {
+				display: block;
+				width: 90%;
+				height: auto;
+				margin: 40px auto;
+				font-size: 25px;
+				text-indent: 2em;
+			}
+			
+			.small {
+				padding: 0 5%;
+				width: 90%;
+				margin: 10px auto;
+				position: absolute;
+				bottom: 20px;
+			}
+			
+			.small span {
+				display: block;
+				float: left;
+				width: 20%;
+				height: 90px;
+				font-size: 60px;
+				line-height: 90px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="guess">
+			<div class="remainTime">剩余时间<span class="time">20</span></div>
+			<div class="complete">完成<span class="degree">0</span></div>
+			<div class="big">黄</div>
+			<span class="tip">根据上面的字的颜色从下面选择正确的字，选择正确自动开始!</span>
+			<div class="small"><span>黄</span><span>黄</span><span>黄</span><span>黄</span><span>黄</span></div>
+		</div>
+		<script>
+			var colors = ['red', 'yellow', 'black', 'green', 'blue'];
+			var words = ['红', '黄', '黑', '绿', '蓝'];
+			var small = document.querySelectorAll('.small span');
+			var big = document.querySelector('.big');
+			var time = document.querySelector('.remainTime .time');
+			var degree = document.querySelector('.degree');
+			degree.count = 0;
+			time.flag=0;
+			function random0_4() { //随机产生0到4
+				return parseInt(Math.random() * 5);
+			}
+
+			function creatNew() {
+				small[0].indexW = random0_4(); //下标标记
+				small[0].indexC = random0_4();
+				big.indexW = random0_4();
+				big.indexC = random0_4();
+				small[0].innerHTML = words[small[0].indexW];
+				small[0].style.color = colors[small[0].indexC];
+				big.innerHTML = words[big.indexW];
+				big.style.color = colors[big.indexC];
+				for(var i = 1; i < 5; i++) { //小字字体下标标记
+					small[i].indexW = random0_4();
+					small[i].indexC = random0_4();
+					var testword = words[small[i].indexW];
+					var testcolor = colors[small[i].indexC];
+					for(var j = 0; j < i; j++) {
+						if(testword == small[j].innerHTML) {
+							i--;
+							break;
+						}
+						if(j == i - 1) {
+							small[i].innerHTML = testword;
+						}
+					}
+					for(var k = 0; k < i; k++) {
+						if(testcolor == small[k].style.color) {
+							i--;
+							break;
+						}
+						if(k == i - 1) {
+							small[i].style.color = testcolor;
+						}
+					}
+				}
+			}
+
+			function timecalc(flag) {
+				if(flag) {
+					var Timer = setInterval(function() {
+						time.innerHTML=time.innerHTML-1;
+						if(Number(time.innerHTML) <= -1) {
+							clearInterval(Timer);
+							stop();
+						} 
+					}, 1000);
+				} else {
+					clearInterval(Timer);
+				}
+			}
+
+			function start() {
+				for(var i = 0; i < small.length; i++) {
+					small[i].onclick = function() {
+						if(time.flag==0){
+							timecalc(1);
+							time.flag=1;
+						}
+						if(this.indexW == big.indexC) {
+							creatNew();
+							degree.count++;
+							degree.innerHTML = degree.count;
+						}
+					}
+				}
+			}
+
+			function stop() {
+				alert("时间到!"+'\n'+"成绩为"+degree.innerHTML);
+				time.innerHTML=20;
+				time.flag=0;
+				degree.count=0;
+				degree.innerHTML = degree.count;
+			}
+			creatNew();
+			start();
+			
+		</script>
+	</body>
+
+</html>
