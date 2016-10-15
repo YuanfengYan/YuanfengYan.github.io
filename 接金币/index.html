@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+
+	<head lang="en">
+		<meta charset="UTF-8">
+		<title>接金币</title>
+		<style>
+			.bg {
+				position: relative;
+				width: 600px;
+				height: 460px;
+				border: 1px rosybrown solid;
+				margin: 40px auto;
+				overflow: hidden;
+				background: url(img/bg.png);
+			}
+			
+			.sheep {
+				width: 60px;
+				height: 80px;
+				background: url(img/sheep.png) -64px 0px no-repeat;
+				position: absolute;
+				bottom: 28px;
+				left: 0px;
+				cursor: move;
+			}
+			
+			.score {
+				width: 60px;
+				margin: 0;
+				text-align: center;
+				font-size: 30px;
+				color: blueviolet;
+				position: absolute;
+				left: 50%;
+				margin-left: -30px;
+			}
+			
+			.gold {
+				position: absolute;
+				top: -35px;
+				width: 30px;
+				height: 30px;
+				background-color: gold;
+				transition-property: all;
+				transition-timing-function: linear;
+				background: url(img/gold.png);
+				background-size: 30px 30px;
+			}
+			
+			.collect {
+				position: absolute;
+				top: -35px;
+				width: 30px;
+				height: 30px;
+				background: deepskyblue;
+				border: 1px blanchedalmond solid;
+				transition-property: all;
+				transition-timing-function: linear;
+			}
+			
+			.addtime {
+				position: absolute;
+				top: -35px;
+				width: 30px;
+				height: 30px;
+				background: red;
+				border: 1px blanchedalmond solid;
+				transition-property: all;
+				transition-timing-function: linear;
+			}
+			
+			.boom {
+				position: absolute;
+				top: -35px;
+				width: 30px;
+				height: 30px;
+				background-image: url(img/boom.png);
+				transition-property: all;
+				transition-timing-function: linear;
+			}
+			
+			.gameTime {
+				position: absolute;
+				left: 0px;
+				top: 0px;
+			}
+			
+			.gameTime p {
+				margin: 5px 0px;
+				float: left;
+				width: 30px;
+				font-size: 25px;
+				color: red;
+			}
+			
+			#show {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				background: black;
+				color: white;
+				font-size: 30px;
+				opacity: 0.4;
+				display: none;
+			}
+			
+			#show p {
+				margin: 0px;
+				width: 120px;
+				height: 40px;
+				text-align: center;
+				line-height: 40px;
+				background-color: red;
+				border-radius: 4px;
+				top: 50%;
+				left: 50%;
+				margin-left: -60px;
+				margin-top: -20px;
+				position: absolute;
+				cursor: pointer;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="bg">
+			<div class="gameTime">
+				<p>20</p>
+				<p>s</p>
+			</div>
+			<p class="score">0</p>
+			<div class="sheep">
+			</div>
+			<div id="show">
+				<p>再来一局</p>
+			</div>
+		</div>
+		<script>
+			var bg = document.querySelector('.bg');
+			var track = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360, 390, 420, 450, 480, 510, 540, 570];
+			var sheep = document.querySelector('.sheep');
+			var score = document.querySelector('.score');
+			var gameTime = document.querySelector('.gameTime p:nth-child(1)');
+			var gameAgina = document.querySelector('#show p:nth-child(1)');
+			var scores = 0,level=0;
+			var oldx = 0;
+
+			function random(max, min) {
+				return Math.floor(Math.random() * (max - min) + min);
+			}
+			/*
+			 * 创建新的金币或炸弹或吸金
+			 */
+			function createGold() {
+				var ranTrack = random(20, 0);
+				var gold = document.createElement('div');
+				var kinds = random(100, 0);
+
+				gold.classList.add('gold');
+				if(kinds < 8+level) {
+					gold.classList.add('boom');
+				} else if(kinds >= 20 && kinds < 24-scores/50) {
+					gold.classList.add('collect');
+				} else if(kinds >= 50 && kinds < 56-scores/50) {
+					gold.classList.add('addtime');
+				} else {
+					gold.classList.add('good');
+				}
+				gold.style.left = track[ranTrack] + 'px';
+				gold.style.top = -34 + 'px';
+				bg.appendChild(gold);
+			}
+			/*
+			 * 将获取最后一个创建的金币，载入定时器进行向下坠落。
+			 * 在下落过程中判断是否和羊相撞。
+			 */
+			function downGold() {
+				var goldlast = document.querySelector('.gold:nth-last-child(1)');
+				var speed = random(5, 2);
+				goldlast.timer = setInterval(function() {
+					goldlast.style.top = goldlast.offsetTop + 5 + 'px';
+					goldlast.style.transitionDuration = speed * 5 + 'ms';
+					if((goldlast.offsetTop + 30 >= sheep.offsetTop) && //高度在羊下面
+						(goldlast.offsetTop + 30 <= sheep.offsetTop + 80) &&
+						(goldlast.offsetLeft < sheep.offsetLeft + 60) && //金币中心点不超过右边
+						(goldlast.offsetLeft + 30 > sheep.offsetLeft)) { //金币中心点不小于羊左边
+						console.log('goldlast.offsetLeft' + goldlast.offsetLeft);
+						console.log('sheep.offsetLeft' + sheep.offsetLeft);
+						console.log('goldlast.offsetTop' + goldlast.offsetTop);
+						console.log('sheep.offsetTop' + sheep.offsetTop);
+						if(goldlast.classList.contains('boom')) { //如果是炸弹
+							stopGame();
+							return ;
+						} else if(goldlast.classList.contains('collect')) { //如果是吸金
+							var allGold = document.querySelectorAll('.bg .good'); //获取当前屏幕中所有的金币
+							for(var i = 0; i < allGold.length; i++) {
+								clearInterval(allGold[i].timer);
+								allGold[i].style.transitionDuration = '1s';
+								allGold[i].style.left = sheep.offsetLeft + 30 + 'px';
+								allGold[i].style.top = sheep.offsetTop + 30 + 'px';
+							}
+							setTimeout(function() {
+								for(var j = 0; j < allGold.length; j++) {
+									try {
+										bg.removeChild(allGold[j]);
+									} catch(ex) {
+										console.log("错了")
+									}
+								}
+							}, 1000);
+							scores += allGold.length;
+							console.log(allGold);
+						} else if(goldlast.classList.contains('addtime')) {
+							gimeTimeCount += 5;
+						} else { //是金币
+							scores++;
+						}
+						level=Math.floor(scores/100) ;
+						score.innerHTML = scores;
+						bg.removeChild(goldlast);
+						clearInterval(goldlast.timer);
+					}
+					if(goldlast.offsetTop >= 600) {
+						bg.removeChild(goldlast);
+						clearInterval(goldlast.timer);
+					}
+				}, speed * 5);
+			}
+			/* 
+			 * 当鼠标按下羊的时候，羊跟随鼠标移动
+			 */
+			sheep.onmousedown = function() {
+				bg.onmousemove = function(event) {
+					var event = window.event || event;
+					if(oldx > event.clientX) { //判断鼠标于上一刻的坐标，进行改变羊的方向。
+						sheep.style.backgroundPosition = '0px 0px';
+					} else {
+						sheep.style.backgroundPosition = '-64px 0px';
+					}
+					if(event.clientX - bg.offsetLeft < 30) {
+						sheep.style.left = 0 + 'px';
+					} else if(event.clientX - bg.offsetLeft > 570) {
+						sheep.style.left = 540 + 'px';
+					} else {
+						sheep.style.left = event.clientX - bg.offsetLeft - sheep.offsetWidth / 2 + 'px';
+					}
+					oldx = event.clientX;
+				}
+			}
+			document.onmouseup = function() {
+				bg.onmousemove = null;
+			}
+			gameAgina.onclick = function() {
+				startGame();
+			}
+
+			function startGame() {
+				document.querySelector('#show').style.display = 'none';
+				scores = 0;
+				gimeTimeCount = 20;
+				gameTime.innerHTML = gimeTimeCount;
+				score.innerHTML = scores;
+				createTime = setInterval(function() {
+					createGold();
+					downGold();
+				}, 150);
+				GameTime = setInterval(function() {
+					gimeTimeCount--;
+					gameTime.innerHTML = gimeTimeCount;
+					if(gimeTimeCount <= 0) {
+						stopGame();
+						clearInterval(GameTime);
+					}
+				}, 1000);
+			}
+
+			function stopGame() {
+				var all = document.querySelectorAll('.gold');
+				clearInterval(createTime);
+				for(var i = 0; i < all.length; i++) {
+					clearInterval(all[i].timer);
+					bg.removeChild(all[i]);
+				}
+				clearInterval(GameTime);
+				document.getElementById('show').style.display = 'block';
+			}
+			startGame();
+		</script>
+	</body>
+
+</html>
