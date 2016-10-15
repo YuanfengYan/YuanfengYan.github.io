@@ -131,7 +131,7 @@ window.onload = function() {
 	}
 	var Pipe = {};
 	Pipe.init = function() {
-		moveTime2 = setInterval(Pipe.movePipe, 5000);
+		moveTime2 = setInterval(Pipe.movePipe, 2500);
 	}
 	Pipe.createPipe = function() {
 		var pipesData = new Array(3);
@@ -156,7 +156,7 @@ window.onload = function() {
 		var pipesData = Pipe.createPipe();
 		pipesData[0].pass=false;
 		var moveTimer1 = setInterval(function() {
-			pipesData[0].style.left = pipesData[0].offsetLeft - 10 + 'px';
+			pipesData[0].style.left = pipesData[0].offsetLeft - 20 + 'px';
 			if(pipesData[0].offsetLeft+pipesData[0].offsetWidth<flybird.offsetLeft&&
 				pipesData[0].pass==false){
 					pipesData[0].pass=true;
