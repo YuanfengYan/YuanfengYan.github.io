@@ -45,6 +45,7 @@ window.onload = function() {
 	Bird.startGame = function() {
 		gameMusic.play();
 		score=0;
+		showLevel(score);
 		head.style.display = 'none';
 		btns.style.display = 'none';
 		flybird.style.display = 'block';
