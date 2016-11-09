@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>贪吃蛇2</title>
+    <style>
+        #can {
+            background-color: #F1F1F1;
+        }
+    </style>
+</head>
+<body>
+<canvas id="can" width="800" height="800"></canvas>
+<script>
+    var can = document.getElementById('can'),
+            ctx = can.getContext('2d');
+    function Rect(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.w = 40;
+        this.h = 40;
+        if (color) {
+            this.color = color;
+        } else {
+            this.color = 'gray';
+        }
+
+        this.draw = function () {
+            ctx.beginPath();
+            ctx.fillStyle = this.color;
+            ctx.fillRect(this.x, this.y, this.w, this.h);
+            ctx.strokeRect(this.x, this.y, this.w, this.h);
+        }
+    }
+    //蛇
+    function Snake() {
+        this.bodyArr = [];//存放蛇
+        this.dir = 39;//默认方向
+        for (var i = 0; i < 4; i++) {
+            var rects = new Rect(i * 40, 120);
+            this.bodyArr.splice(0, 0, rects);
+        }
+        this.bodyArr[0].color = 'red';//蛇头
+        //绘制蛇
+        this.draw = function () {
+            for (var i = 0; i < this.bodyArr.length; i++) {
+                this.bodyArr[i].draw();
+
+            }
+        }
+        //蛇的移动
+        this.move = function () {
+            var crSnake = new Rect(this.bodyArr[0].x, this.bodyArr[0].y);
+            this.bodyArr.splice(1, 0, crSnake);
+            switch (this.dir) {
+                case 37:
+                    this.bodyArr[0].x -= 40;
+                    break;
+                case 38:
+                    this.bodyArr[0].y -= 40;
+                    break;
+                case 39:
+                    this.bodyArr[0].x += 40;
+                    break;
+                case 40:
+                    this.bodyArr[0].y += 40;
+                    break;
+                default:
+                    break;
+            }
+            //判断是否碰到食物，碰到食物不删除，没碰到删除。
+            if (this.bodyArr[0].x == food.x && this.bodyArr[0].y == food.y) {
+                food=crfood();
+                food.draw();
+
+            } else {//没碰到食物
+                this.bodyArr.pop();
+                food.draw();
+            }
+            for(var i=1;i<this.bodyArr.length;i++){
+                if(this.bodyArr[0].x==this.bodyArr[i].x&&this.bodyArr[0].y==this.bodyArr[i].y){
+                    clearInterval(timer);
+                }
+            }
+            if(this.bodyArr[0].x<=0||this.bodyArr[0].x>=can.width-20||this.bodyArr[0].y<=0||this.bodyArr[0].y>can.height-20){
+                clearInterval(timer);
+            }
+        }
+    }
+    document.onkeydown = function (ev) {
+        var event = ev || window.event;
+        switch (true) {
+            case (event.keyCode == 37) && (snake.dir != 39):
+                snake.dir = 37;
+                break;
+            case (event.keyCode == 38) && (snake.dir != 40):
+                snake.dir = 38;
+                break;
+            case (event.keyCode == 39) && (snake.dir != 37):
+                snake.dir = 39;
+                break;
+            case (event.keyCode == 40) && (snake.dir != 38):
+                snake.dir = 40;
+                break;
+            default:
+                break;
+        }
+    }
+    //创建食物
+    function crfood() {
+
+        var bol = true;
+        while (bol) {
+            var x = ran(0, 20) * 40;
+            var y = ran(0, 15) * 40;
+            for (var i = 0; i < snake.bodyArr.length; i++) {
+                if (x == snake.bodyArr[i].x&&y==snake.bodyArr[i].y) {
+                    bol=true;
+                    break;
+                }else{
+                    bol=false;
+                }
+
+            }
+        }
+        return new Rect(x,y,'green');
+    }
+    function ran(min, max) {
+        return Math.floor(Math.random() * (max - min) + min);
+    }
+
+
+    var snake = new Snake();
+    var food= crfood();
+    food.draw();
+    snake.draw();
+    snake.move();
+    var timer= setInterval(function () {
+        ctx.clearRect(0, 0, can.width, can.height);
+        snake.move();
+        snake.draw();
+    }, 300);
+</script>
+</body>
+</html>
