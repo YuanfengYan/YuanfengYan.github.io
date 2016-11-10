@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=2.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <title>Title</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #can {
+            /*background: url("img/background.png") repeat-y;*/
+
+            border: 1px black solid;
+            /*animation: BG 10s linear infinite;*/
+        }
+
+        .content {
+            margin: 0 auto;
+            width: 320px;
+        }
+
+        @-webkit-keyframes BG {
+            form {
+                background-position: 0px 0px;
+            }
+            to {
+                background-position: 0px 568px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <canvas id="can" width="320px" height="568px">
+        ......
+    </canvas>
+</div>
+
+</body>
+<script>
+    var can = document.getElementById('can');
+    var ctx = can.getContext('2d'),
+            centerX = can.width / 2,   //Canvas中心点x轴坐标
+            centerY = can.height / 2,  //Canvas中心点y轴坐标
+            rad = Math.PI * 2 / 100;//将360度分成100份，那么每一份就是rad度
+    var preNum=0;//预加载百分比
+    var content = document.querySelector('.content');
+    var direction = null;
+    var score = 0;
+//    imgData = ['img/bomb.png', 'img/bullet1.png', 'img/bullet2.png', 'img/enemy1.png',
+//        'img/enemy2.png', 'img/enemy3.png', 'img/herofly.png', 'img/prop.png', 'img/background.png'];
+    function preAnimation() {
+
+        (function draFrame() {
+            var preFram= window.requestAnimationFrame(draFrame);
+            ctx.clearRect(0, 0, can.width, can.height);
+            ctx.save();
+            ctx.beginPath();
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.arc(centerX, centerY, 100, 0, Math.PI * 2, true);
+            ctx.stroke();
+            ctx.restore();
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.strokeStyle='#49f';
+            ctx.lineWidth=10;
+            ctx.arc(centerX,centerY,100,-Math.PI/2,rad*preNum-Math.PI/2,false);
+            ctx.stroke();
+            ctx.restore();
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.strokeStyle='#49f';
+            ctx.font='40px 黑体';
+            ctx.strokeText(preNum.toFixed(0)+'%',centerX-25,centerY+10);
+            ctx.stroke();
+            ctx.restore();
+            if(preNum==100){
+                cancelAnimationFrame(preFram);
+            }
+        })();
+
+    }
+
+    /**
+     * 预加载图片
+     * @param ImgArr  json
+     * @param attr   回调函数的对象
+     */
+    function loading(ImgArr, attr) {
+        var len = 0;//用来存放一共多少数据
+        var loadingArr = {};//
+        for (var prop in ImgArr) {
+            len++;
+        }
+        var num = 0;//加载完一张图片数加一
+        preAnimation();
+        for (var prop in ImgArr) {
+            var img = new Image();
+            img.src = ImgArr[prop];
+            img.onload = (function (_prop) {
+                return function () {
+                    num++;
+                    loadingArr[_prop] = this;//this--当前加载的数据
+                    if (num >= len) {
+                        attr.complete(loadingArr);
+                        preNum=num/len*100;
+                    } else {
+                        preNum=num/len*100;
+//                         console.log(j);
+
+                    }
+                }
+            })(prop)
+        }
+    }
+    //    loading(imgData,{complete:main});
+    loading({
+        'm1': 'img/bullet1.png',
+        'bullet': 'img/bullet2.png',
+        'enemy1': 'img/enemy1.png',
+        'enemy2': 'img/enemy2.png',
+        'enemy3': 'img/enemy3.png',
+        'hero': 'img/herofly.png',
+        'm7': 'img/prop.png',
+        'bg': 'img/background.png'
+    }, {complete: main});
+    function main(loadingArr) {
+//        console.log(loadingArr);
+        var bg = loadingArr.bg;
+//        console.log(bg);
+        can.width = bg.width;
+        can.height = bg.height;
+//        console.log(bg);
+
+        //主机
+        function Hero() {
+            this.img = loadingArr.hero;
+            this.w = this.img.width / 5;
+            this.h = this.img.height;
+            this.x = can.width / 2 - this.w / 2;
+            this.y = can.height - this.h;
+            this.speed = 4;
+            this.index = 0;//主机生命值
+            this.num = 0;//碰撞次数
+        }
+
+        Hero.prototype.draw = function () {
+            switch (direction) {//移动主机
+                case 37:
+                    if (this.x <= 0) {
+                        this.x = 0;
+                    } else {
+                        this.x -= this.speed;
+                    }
+                    break;
+                case 38:
+                    if (this.y <= 0) {
+                        this.y = 0;
+                    } else {
+                        this.y -= this.speed;
+                    }
+                    break;
+                case 39:
+                    if (this.x >= can.width - this.w) {
+                        this.x = can.width - this.w;
+                    } else {
+                        this.x += this.speed;
+                    }
+                    break;
+                case 40:
+                    if (this.y >= can.height - this.h) {
+                        this.y = can.height - this.h;
+                    } else {
+                        this.y += this.speed;
+                    }
+                    break;
+            }
+            for (var i = 0; i < enemyArr.length; i++) {
+                if (this.x < enemyArr[i].x + enemyArr[i].w && this.x + this.w > enemyArr[i].x && this.y < enemyArr[i].y + enemyArr[i].h && this.y + this.h > enemyArr[i].y) {
+                    if (this.num % 20 == 0) {
+                        this.index++;
+                    }
+                    this.num++;
+                }
+            }
+            ctx.drawImage(this.img, this.w * this.index, 0, this.w, this.h, this.x, this.y, this.w, this.h);
+        }
+
+        var hero = new Hero();
+        hero.index = 0;
+
+        function Bullet() {
+            this.img = loadingArr.bullet;
+            this.w = this.img.width;
+            this.h = this.img.height;
+            this.x = hero.x - (this.w - hero.w) / 2;
+            this.y = hero.y - 5;
+
+            this.speed = 3;
+            this.power = 1;//子弹威力
+        }
+
+        Bullet.prototype.draw = function () {
+            ctx.drawImage(this.img, this.x, this.y, this.w, this.h)
+        }
+        Bullet.prototype.move = function () {
+
+            for (var i = 0; i < enemyArr.length; i++) {
+                //碰撞范围
+                if (this.x < enemyArr[i].x + enemyArr[i].w && this.x + this.w > enemyArr[i].x && this.y < enemyArr[i].y + enemyArr[i].h && this.y + this.h > enemyArr[i].y) {
+                    enemyArr[i].power -= this.power;
+                    this.y = -500;//子弹碰到敌机消失
+                }
+            }
+            this.y -= this.speed;
+        }
+        //清除多余子弹
+        Bullet.prototype.clear = function () {
+            if (this.y < 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        function Enemy() {
+            this.type = 1;//
+            var num = rand(10, 1);//代表那种敌机
+            if (num < 4) {
+                //创建小飞机
+                this.img = loadingArr.enemy1;
+                this.w = this.img.width / 5;
+                this.h = this.img.height;
+                this.speed = 3;//敌机速度
+                this.power = 1;//敌机血量
+                this.type = 1;//哪种敌机
+            } else if (num < 8 && num >= 4) {
+                //创建中飞机
+                this.speed = 2;//敌机速度
+                this.img = loadingArr.enemy2;
+                this.w = this.img.width / 6;
+                this.h = this.img.height;
+                this.power = 2;//敌机血量
+                this.type = 2;//哪种敌机
+            } else {
+                //创建大飞机
+                this.img = loadingArr.enemy3;
+                this.w = this.img.width / 10;
+                this.h = this.img.height;
+                this.speed = 1;//敌机速度
+                this.power = 5;//敌机血量
+                this.type = 3;//哪种敌机
+            }
+            this.x = rand(can.width - this.w, 0);
+            this.y = -this.img.height;
+            this.index = 0;//切换碰撞的效果
+            this.num = 0;//碰撞
+            this.sound = false;
+            this.judeg = true;//判断
+        }
+
+        //画出敌机
+        Enemy.prototype.draw = function () {
+            //判断敌机消失，如果消失
+            if (this.power <= 0) {
+                this.num++;
+                this.speed = 0;
+                if (this.num % 5 == 0) {
+                    this.index++;//改变敌机图片的显示
+                    if (this.judeg) {
+                        if (this.type == 1) {
+                            //小飞机音乐
+                            var bgSound = new Audio("music/enemy1_down.mp3");
+                            bgSound.play();
+                            score += 1;
+                            this.judeg = false;
+                        } else if (this.type == 2) {
+                            //中飞机
+                            var bgSound = new Audio("music/enemy3_down.mp3");
+                            bgSound.play();
+                            score += 2;
+
+                            this.judeg = false;
+                        } else {
+                            //大飞机
+                            var bgSound = new Audio("music/enemy2_down.mp3");
+                            bgSound.play();
+                            score += 5;
+                            this.judeg = false;
+//                            console.log(score);
+                        }
+                    }
+                }
+                //让打中的敌机消失
+                if (this.index > this.img.width / this.w) {
+                    this.y = can.height;
+                }
+            }
+
+            ctx.drawImage(this.img, this.w * this.index, 0, this.w, this.h, this.x, this.y, this.w, this.h);
+        }
+        //移动敌机
+        Enemy.prototype.move = function () {
+            this.y += this.speed;
+        }
+        Enemy.prototype.clear = function () {
+            if (this.y >= this.height) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        function rand(max, min) {
+            return Math.floor(Math.random() * (max - min) + min);
+        }
+
+        function reStart() {
+            hero = new Hero();
+            bulletArr = [];
+            enemyArr = [];
+            moves = 0;
+            score=0;
+            draw();
+        }
+
+        //动画
+        var moves = 0;
+        var bulletArr = [];
+        var enemyArr = [];
+        var _w = 0;
+
+        function draw() {
+            ctx.clearRect(0, 0, can.width, can.height);
+            ctx.drawImage(bg, 0, moves);
+            ctx.drawImage(bg, 0, moves - bg.height);
+            hero.draw();
+            ctx.fillStyle = '#000';
+            ctx.font = '30px 黑体';
+//            ctx.strokeText(text,0,200);
+            ctx.fillText(score, 0, 30);
+            moves++;
+            if (moves % 50 == 0) {//创建敌机
+                var enemy = new Enemy();
+                enemyArr.push(enemy);
+            }
+            for (var i = 0; i < enemyArr.length; i++) {//绘制敌机
+                enemyArr[i].draw();
+                enemyArr[i].move();
+//                console.log(enemyArr.length);
+            }
+            if (moves >= bg.height) {//移动背景
+                moves = 0;
+            }
+            //每次发射子弹的速度
+            if (moves % 20 == 0) {
+                var bullet = new Bullet();
+                bulletArr.push(bullet);
+            }
+            //循环绘制子弹
+            for (var i = 0; i < bulletArr.length; i++) {
+                bulletArr[i].draw();
+                bulletArr[i].move();
+                //子弹音乐
+                if (moves % 20 == 0) {
+                    var buSound = new Audio('music/bullet.mp3');
+                    buSound.play();
+                }
+                //清除多余子弹
+                if (bulletArr[i].clear()) {
+                    bulletArr.splice(i, 1);
+                }
+            }
+            var animation = window.requestAnimationFrame(draw);
+            if (hero.index >= 5) {
+                cancelAnimationFrame(animation);
+                ctx.save();
+                ctx.globalAlpha = 0.5;
+                ctx.fillStyle = 'rgb(154,154,154)';
+                ctx.fillRect(0, 0, can.width, can.height);
+                ctx.restore();
+                ctx.fillStyle = '#ff0000';
+                ctx.font = '30px 黑体';
+                var txt = '再来一次';
+                _w = ctx.measureText(txt).width;
+                ctx.fillText(txt, (can.width - _w) / 2, can.height / 2 - 30);
+            }
+        }
+
+        //    pc端事件
+        window.addEventListener('keydown', function (e) {
+            var ev = e || window.event;
+            direction = ev.keyCode;
+        }, false);
+        window.addEventListener('keyup', function (e) {
+            var ev = e || window.event;
+            if (direction == ev.keyCode)
+                direction = null;
+        }, false);
+        can.addEventListener('click', function (ev) {
+            var event = ev || window.event;
+            if (event.clientX - can.offsetLeft > (can.width - _w) / 2 &&
+                    event.clientX - can.offsetLeft < (can.width - _w) / 2 + _w &&
+                    event.clientY > can.height / 2-60  &&
+                    event.clientY < can.height / 2-30) {
+//                console.log('ok');
+                reStart();
+            }
+        }, false)
+        //移动端事件
+        can.addEventListener('touchstart', function () {
+            if (event.touches.length == 1) {
+                var x = event.touches[0].clientX;
+                var y = event.touches[0].clientY;
+                var disx = x - hero.x;
+                var disy = y - hero.y;
+                can.addEventListener('touchmove', function () {
+                    hero.x = event.touches[0].clientX - disx;
+                    hero.y = event.touches[0].clientY - disy;
+                }, false)
+
+            }
+        }, false)
+
+
+        draw();
+
+    }
+
+
+</script>
+</html>
