@@ -1,0 +1,168 @@
+.hide{
+	display: none;
+}
+#cloud2{
+    width:3.74rem/* 187px */;
+    position: absolute;
+    right: -.6rem/* 30px */;
+    top: 4rem/* 200px */;
+    z-index: 5;
+}
+#logo1{
+	position: absolute;
+    width: 2.4rem/* 120px */;
+    top: 3rem/* 150px */;
+    left: 2.54rem/* 127px */;
+    z-index: 10;
+
+}
+#cloud1{
+	width: 3.74rem/* 180px */;
+    position: absolute;
+    left: 0/* 0px */;
+    top: 2rem/* 100px */;
+    z-index: 5;
+}
+#bg{
+	/*width: 100%;*/
+	height: 100%;
+	width: 100%;
+	z-index: 0;
+}
+#p_1{
+	width: 5rem;
+	position: absolute;
+	top:6rem/* 300px */;
+	left: 1.2rem/* 75px */;
+}
+#p_2{
+	width: 4.5rem;
+	position: absolute;
+	bottom: 2rem/* 200px */;
+	left: 1.5rem/* 100px */;
+}
+.up{
+	position: absolute;
+	bottom: .2rem/* 10px */;
+	left: 3.46rem/* 173px */;
+	width: .6rem/* 30px */;
+	height:.6rem/* 30px */;
+	background:url(../img/up.png) no-repeat ;
+	background-position: 0 0;
+	animation: UP 1s steps(6)  ;
+	animation-iteration-count:infinite;
+
+
+}
+@-webkit-keyframes UP{
+	0%{
+		background-position: 0px 0;
+	}
+	/*16.6%{
+		background-position: -30px 0;
+	}
+	33.3%{
+		background-position: -60px 0;
+	}
+	50%{
+		background-position: -90px 0;
+	}
+	67%{
+		background-position: -120px 0;
+	}*/
+	100%{
+		background-position: -180px 0;
+	}
+
+}
+
+/*page2******/
+#bfc1{
+	width: 1.2rem/* 60px */;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    top:1.6rem/* 80px */;
+}
+#bfc2{
+	    width: 2.32rem/* 116px */;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    top: 7rem/* 350px */;
+}
+#bt{
+    width: 1.9rem/* 95px */;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    top: 7.36rem/* 368px */;
+}
+#zxx{
+    width: 2.18rem/* 109px */;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    top: 8.6rem/* 430px */;
+}
+#year{
+		width: 2.12rem/* 106px */;
+	    position: absolute;
+	    left: 4rem/* 200px */;
+	    top:9.46rem/* 473px */;
+}
+.cicle{
+	width: .2rem/* 20px */;
+	height: .2rem/* 20px */;
+	border-radius: 50%;
+	background-color: white;
+	position: absolute;
+	animation: shine 2s infinite ease-in-out alternate;
+}
+.line{
+	position: absolute;
+	height: .04rem/* 2px */;
+	background-color: white;
+	/*transition: width 10s linear;*/
+	width: 0rem;
+}
+/*.drawLine,.drawCicle{
+	position: absolute;
+}*/
+@-webkit-keyframes shine{
+	from{}
+	to{
+		box-shadow: 2px 2px 10px white,-2px -2px 10px white;
+	}
+}
+
+/*page3*/
+#si{
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+#si img{
+	width: 80%;
+    position: absolute;
+    text-align: center;
+    left: 0;
+    margin: auto;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    transition: width 0.5s ease;
+}
+#si .widthChange{
+	width: 100%;
+}
+
+
+
+
+
+
