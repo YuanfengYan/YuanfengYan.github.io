@@ -1,6 +1,28 @@
-.hide{
-	display: none;
-}
+ body,html{
+            width: 100%;
+            height: 100%;
+        }
+        *{
+            margin:0 auto;
+            padding:0;
+        }
+        .swiper-container{
+            width: 100%;
+            height: 100%;
+        }
+        .swiper-slide{
+            background: url(../img/bg.jpg) no-repeat center;
+            background-size: cover;
+        }
+        .page1{
+            background: rgb(135,206,235);
+        }
+        div{
+            font-size: .2rem;
+        }
+        #can{
+            position: absolute;
+        }
 #cloud2{
     width:3.74rem/* 187px */;
     position: absolute;
@@ -49,7 +71,7 @@
 	height:.6rem/* 30px */;
 	background:url(../img/up.png) no-repeat ;
 	background-position: 0 0;
-	animation: UP 1s steps(6)  ;
+	animation: UP 10s steps(6)  ;
 	animation-iteration-count:infinite;
 
 
@@ -115,6 +137,10 @@
 	    left: 4rem/* 200px */;
 	    top:9.46rem/* 473px */;
 }
+.drawLine1{
+	width: 100%;
+	height: 100%;
+}
 .cicle{
 	width: .2rem/* 20px */;
 	height: .2rem/* 20px */;
@@ -160,8 +186,63 @@
 #si .widthChange{
 	width: 100%;
 }
+/*page4*************************************/
+.loader_img{
+	width: 80%;
+	position: absolute;
+	top: 10%;
+	left: 0;
+	right: 0;
 
-
+}
+/*.show{
+	display: block;
+}*/
+.hide{
+	display: none;
+}
+.mark{
+	position: absolute;
+	width: 100%;
+    height: 100%;
+	background: rgba(0,0,0,0.5);
+	
+}
+.pictures{
+	position: relative;
+    width: 80%;
+    height: 100%;
+    top:10%;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+}
+.pictures img{
+	position: absolute;
+	width: 100%;
+	transform-origin: right bottom; 
+}
+/*.trans{
+	transition: transform 0.3s ;
+}*/
+/*进度条*/
+.y{
+	width: 5%;
+	/*height: 100%;*/
+	position: absolute;
+	left: 0;
+	bottom: 0;
+}
+.y .signImg{
+	width: 100%;
+}
+.y_line{
+	width: 100%;
+    /*position: absolute;*/
+    bottom: 0;
+    height: 50px;
+    background: url(../img/sign_line.png) repeat-y center;
+}
 
 
 
